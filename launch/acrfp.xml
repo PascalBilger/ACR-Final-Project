@@ -1,0 +1,30 @@
+<!-- -*- mode: XML -*- -->
+<launch>
+
+    <!-- LAUNCH F1TENTH SIM WITHOUT TELEOP -->
+    <!-- Launch a map from the maps folder-->
+    <arg name="map_name" default="GLC_smile_small"/>
+    <let name="map_path" value="$(find-pkg-share f1tenth_gym_ros)/maps/$(var map_name)" />
+
+    <include file="$(find-pkg-share f1tenth_gym_ros)/launch/gym_bridge_launch.py">
+        <arg name="map_yaml_path" value="$(var map_path)/$(var map_name).yaml" />
+    </include>
+
+    <!-- launch global trajectory republisher -->
+    <include file="$(find-pkg-share global_planner)/launch/global_trajectory_publisher_launch.xml">
+        <arg name="map_path" value="$(var map_path)" />
+    </include>
+
+    <!-- Launch Frenet odom -->
+  <include file="$(find-pkg-share frenet_odom_republisher)/launch/frenet_odom_republisher_launch.xml" />
+
+    <!-- Launch lap analyser -->
+  <node pkg="lap_analyser" name="lap_analyser" exec="lap_analyser" output="screen" />
+
+  <!-- Launch Spliner -->
+  <node pkg="acrfp" name="spliner" exec="spliner" output="screen"/>
+
+  <!-- Launch Lab6 Modified Pure Pursuit -->
+  <node pkg="acrfp" name="controller" exec="mod_pp" output="screen"/>
+    
+</launch>
